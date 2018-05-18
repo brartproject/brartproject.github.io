@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Science</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+        p {
+            visibility: hidden;
+        }
+    </style>
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script>
+        function onTouch() {
+            if (document.getElementById("boring").style.visibility == "visible") {
+                document.getElementById("boring").style.visibility = "hidden";
+            } else {
+                document.getElementById("boring").style.visibility = "visible";
+            }
+            
+        }
+    </script>
+</head>
+
+<body onkeypress="onTouch()">
+    <script>
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1000);
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        var geometry = new THREE.TorusGeometry(1.5, 1, 16, 32);
+        var material = new THREE.MeshBasicMaterial({ color: 0xff6363 });
+        var torus = new THREE.Mesh(geometry, material);
+        var geometry2 = new THREE.TorusGeometry(5, .5, 16, 32);
+        var material2 = new THREE.MeshBasicMaterial({ color: 0xff6363 });
+        var ring1 = new THREE.Mesh(geometry2, material2);
+        var ring2 = new THREE.Mesh(geometry2, material2);
+        var ring3 = new THREE.Mesh(geometry2, material2);
+        var ring4 = new THREE.Mesh(geometry2, material2);
+        var spoke = new THREE.Mesh( new THREE.CylinderGeometry(0.5, 0.5, 1, 32, 1), new THREE.MeshBasicMaterial({ color: 0xff6363 }));
+        var point = new THREE.Mesh(new THREE.SphereGeometry( 1.5, 32, 32 ), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        var referencePoint = new THREE.Object3D();
+        var geo = new THREE.Geometry();
+        geo.vertices.push(new THREE.Vector3(point.position.x,point.position.y,point.position.z));
+        spoke.scale.set(1, 20, 1);
+        torus.add( spoke.clone() );
+        spoke.rotation.z = Math.PI / 2;
+        torus.add( spoke.clone() );
+        spoke.scale.set(1, 10, 1);
+        ring1.add( spoke.clone() );
+        spoke.rotation.z = 0;
+        ring1.add( spoke.clone() );
+        ring4.add(spoke.clone());
+        spoke.rotation.z = Math.PI/2;
+        ring4.add(spoke.clone());
+        ring2.add(spoke.clone());
+        spoke.rotation.z = 0;
+        ring2.add(spoke.clone());
+        ring3.add(spoke.clone());
+        spoke.rotation.z = Math.PI/2;
+        ring3.add(spoke.clone());
+
+        ring1.add(referencePoint);
+        referencePoint.add(point);
+
+        scene.add(torus);
+        scene.add(ring1);
+        scene.add(ring2);
+        scene.add(ring3);
+        scene.add(ring4);
+
+        var controls = new THREE.OrbitControls( camera );
+        controls.addEventListener( 'change', renderer );
+        controls.autoRotate = true;
+        controls.enableZoom = false;
+
+        camera.position.z = 50;
+        ring1.position.y += 10;
+        ring2.position.x += 10;
+        ring3.position.y -= 10;
+        ring4.position.x -= 10;
+        torus.position.z += 1;
+        point.position.x += 5;
+        ring1.material.visible = false;
+        extrapos = [];
+        var date;
+        var i = [Math.PI, Math.PI/2, Math.PI*3/2, 0];
+        var animate = function () {
+            requestAnimationFrame(animate);
+
+            i[0] -= .01;
+            i[1] -= .01;
+            i[2] -= .01;
+            i[3] -= .01;
+            ring1.position.set( (Math.cos(i[0]) * 10), Math.sin(i[0]) * 10, 1 );
+            ring2.position.set( (Math.cos(i[1]) * 10), Math.sin(i[1]) * 10, 1 );
+            ring3.position.set( (Math.cos(i[2]) * 10), Math.sin(i[2]) * 10, 1 );
+            ring4.position.set( (Math.cos(i[3]) * 10), Math.sin(i[3]) * 10, 1 );
+
+            ring1.rotation.z += .01;
+            ring2.rotation.z += .01;
+            ring3.rotation.z += .01;
+            ring4.rotation.z += .01;
+            torus.rotation.z -= .01;
+            point.rotation += .01;
+            renderer.render(scene, camera);
+            extrapos.push([point.position.x,point.position.y,point.position.z]);
+        };
+
+        animate();
+    </script>
+    <p id="boring" style="z-index: 999; color: white; position: absolute; top: 0; left: 0; margin: auto; margin-left: 5px; margin-top: 20px;font-family: 'Comic Sans MS'; font-size: 14px;">
+        "Fun" Physics Stuff<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;&nbsp;centripetal force<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;&nbsp; two sources of the force<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;&nbsp;acceleration<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;&nbsp;when the centripetal forces are acting in the same direction, the acceleration is positive.<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b)&nbsp;&nbsp;when the forces are against eachother, the acceleration is negative.<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;&nbsp;potential energy<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;&nbsp;when the white sphere is at the max/min points, the potential energy is the max<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;4.&nbsp;&nbsp;kinetic energy<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;&nbsp;when the sphere is closest to the origin, which is where the centripetal <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forces are acting together, the kinetic energy is the greatest.<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;5.&nbsp;&nbsp;momentum<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;&nbsp;p = mv | if someone is heavier, the momentum they expierence will be greater<br/>
+    </p>
+</body>
+
+</html>
